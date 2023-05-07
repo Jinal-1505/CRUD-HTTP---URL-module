@@ -12,14 +12,15 @@ const server = http.createServer((req, res) => {
     const { pathname, query } = url.parse(req.url);
     const { email } = queryString.parse(query);
 
-    // Handle GET requests
     switch (req.method) {
+        // Handle GET requests==read
         case 'GET':
             if (pathname === '/') {
                 res.setHeader('Content-Type', 'application/json');
                 res.writeHead(200);
                 res.end(JSON.stringify(users));
             }
+            //handle GET perticuler user
             else if (pathname === '/user' && email) {
                 const user = users.find(u => u.email);
                 if (user) {
@@ -35,11 +36,12 @@ const server = http.createServer((req, res) => {
                 return handleError(res, 404);
             }
             break;
+        //handle create
         case 'POST':
             if (pathname === '/') {
                 let b = '';
                 req.on('data', chunks => {
-                    b += chunks.toString();
+                    b = b + chunks.toString();
                 });
                 req.on('end', () => {
                     const user = JSON.parse(b);
@@ -49,7 +51,7 @@ const server = http.createServer((req, res) => {
                     }
                     else {
                         users.push(user);
-                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.writeHead(201, { 'Content-Type': 'application/json' });
                         res.end();
                     }
                 });
@@ -57,6 +59,7 @@ const server = http.createServer((req, res) => {
                 return handleError(res, 404);
             }
             break;
+        //handle update
         case 'PUT':
             if (pathname === '/user' && email) {
                 let b = '';
@@ -68,7 +71,7 @@ const server = http.createServer((req, res) => {
                     const index = users.findIndex(u => u.email === email);
                     if (index >= 0) {
                         users[index] = { ...user, email }
-                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.writeHead(201, { 'Content-Type': 'application/json' });
                         res.end();
                     } else {
                         return handleError(res, 404);
@@ -80,6 +83,7 @@ const server = http.createServer((req, res) => {
                 return handleError(res, 404);
             }
             break;
+        //handle delete
         case 'DELETE':
             if (pathname === '/user' && email) {
                 const index = users.findIndex(u => u.email === email);
