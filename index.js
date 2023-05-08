@@ -14,7 +14,6 @@ function writeFile(data) {
 }
 
 const server = http.createServer((req, res) => {
-    // const method = req.method;
     const { pathname, query } = url.parse(req.url);
     const { email } = queryString.parse(query);
 
@@ -62,7 +61,7 @@ const server = http.createServer((req, res) => {
                         userData.push(user);
                         writeFile(userData);
                         res.writeHead(201, { 'Content-Type': 'application/json' });
-                        res.end();
+                        res.end(console.log("Created Sucessfully...!!"));
                     }
                 });
             } else {
@@ -84,7 +83,7 @@ const server = http.createServer((req, res) => {
                         userData[index] = { ...user, email }
                         writeFile(userData);
                         res.writeHead(201, { 'Content-Type': 'application/json' });
-                        res.end();
+                        res.end(console.log("Data Updated Successfully...!!"));
                     } else {
                         return handleError(res, 404);
                     }
@@ -104,7 +103,8 @@ const server = http.createServer((req, res) => {
                     userData.splice(index, 1);
                     writeFile(userData);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end();
+
+                    res.end(console.log("Data Deletd Sucessfully..!!!"));
                 }
                 else {
                     return handleError(res, 404);
