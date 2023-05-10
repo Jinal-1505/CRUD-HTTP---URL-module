@@ -6,8 +6,15 @@ const port = "3000";
 const fs = require('fs');
 const file = "db.json";
 function readFile() {
-    const data = fs.readFileSync(file);
-    return JSON.parse(data);
+    if (fs.existsSync(file)) {
+        const data = fs.readFileSync(file);
+        return JSON.parse(data);
+    }
+    else {
+        const edata = [];
+        writeFile(edata);
+        return edata;
+    }
 }
 function writeFile(data) {
     fs.writeFileSync(file, JSON.stringify(data));
