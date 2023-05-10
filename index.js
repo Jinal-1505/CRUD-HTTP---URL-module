@@ -29,18 +29,19 @@ const server = http.createServer((req, res) => {
             //handle GET perticuler user
             else if (pathname === '/user' && email) {
                 const userData = readFile();
-                const user = userData.find(u => u.email);
+
+                const user = userData.find(u => u.email === email);
                 if (user) {
                     res.setHeader('Content-Type', 'application/json');
                     res.writeHead(200);
                     res.end(JSON.stringify(user));
                 }
                 else {
-                    return handleError(res, 404);
+                    return handleError(res, 404, 'User not found');
                 }
             }
             else {
-                return handleError(res, 404);
+                return handleError(res, 404, 'Invalid Url');
             }
             break;
         //handle create
@@ -54,18 +55,19 @@ const server = http.createServer((req, res) => {
                     const user = JSON.parse(b);
                     const userData = readFile();
                     if (userData.find(u => u.email === user.email)) {
-                        res.writeHead(404, { 'Content-Type': 'application/json' });
-                        res.end("Already Existed...");
+                        // res.writeHead(404, { 'Content-Type': 'application/json' });
+                        // res.end("Already Existed...");
+                        return handleError(res, 400, 'user already exists');
                     }
                     else {
                         userData.push(user);
                         writeFile(userData);
                         res.writeHead(201, { 'Content-Type': 'application/json' });
-                        res.end("Created Sucessfully...!!");
+                        res.end("User Created Sucessfully...!!");
                     }
                 });
             } else {
-                return handleError(res, 404);
+                return handleError(res, 404, "Invalid Url");
             }
             break;
         //handle update
@@ -82,16 +84,16 @@ const server = http.createServer((req, res) => {
                     if (index >= 0) {
                         userData[index] = { ...user, email }
                         writeFile(userData);
-                        res.writeHead(201, { 'Content-Type': 'application/json' });
-                        res.end("Data Updated Successfully...!!");
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ message: "Data Updated Successfully...!!" }));
                     } else {
-                        return handleError(res, 404);
+                        return handleError(res, 404, 'User is not found');
                     }
 
                 });
             }
             else {
-                return handleError(res, 404);
+                return handleError(res, 404, 'Invalid URL');
             }
             break;
         //handle delete
@@ -100,18 +102,19 @@ const server = http.createServer((req, res) => {
                 let userData = readFile();
                 const index = userData.findIndex(u => u.email === email);
                 if (index >= 0) {
+                    // console.log(index);
                     userData.splice(index, 1);
+                    // console.log(userData);
                     writeFile(userData);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
-
-                    res.end("Data Deleted Sucessfully..!!!");
+                    res.end(JSON.stringify({ message: "Data Deleted Sucessfully..!!!" }));
                 }
                 else {
-                    return handleError(res, 404);
+                    return handleError(res, 404, 'User not found');
                 }
             }
             else {
-                return handleError(res, 404);
+                return handleError(res, 404, 'Invalid URL');
             }
             break;
     }
@@ -121,7 +124,8 @@ server.listen(port, host, () => {
     console.log("server is running on port 3000");
 });
 //handling error
-function handleError(res, code) {
+function handleError(res, code, message) {
     res.statusCode = code;
-    res.end(`{"error"}`);
+    res.end(JSON.stringify({ error: message }));
+
 }
