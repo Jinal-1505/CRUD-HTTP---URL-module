@@ -102,9 +102,7 @@ const server = http.createServer((req, res) => {
                 let userData = readFile();
                 const index = userData.findIndex(u => u.email === email);
                 if (index >= 0) {
-                    // console.log(index);
                     userData.splice(index, 1);
-                    // console.log(userData);
                     writeFile(userData);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ message: "Data Deleted Sucessfully..!!!" }));
